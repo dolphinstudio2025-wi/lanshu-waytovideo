@@ -28,8 +28,7 @@
 | 📥 **自动下载** | 通过 thread_id 详情页提取 CDN 链接，curl 直接下载 |
 | 🔐 **Cookie 登录** | 免密登录，支持自定义 cookies 路径 |
 | 🧪 **Dry-Run 调试** | 填写表单但不提交，生成截图供检查 |
-| � **Dry-Run 调试** | 填写表单但不提交，生成截图供检查 |
-| �🤖 **AI Agent Skill** | 标准 Skill 格式，完美兼容 OpenClaw、Claude Code 等 Agent 框架 |
+| 🤖 **AI Agent Skill** | 标准 Skill 格式，完美兼容 OpenClaw、Claude Code 等 Agent 框架 |
 
 ## 🚀 快速开始 (作为 AI Agent Skill)
 
