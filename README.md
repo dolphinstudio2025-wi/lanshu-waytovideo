@@ -16,7 +16,7 @@
 
 # 🎬 Jianying Video Gen
 
-> 基于 Playwright 自动化操作 **剪映小云雀 (xyq.jianying.com)**，使用 **Seedance 2.0** 模型批量生成 AI 视频。
+> 主打AI Agent自动化操作 **剪映小云雀 (xyq.jianying.com)**，使用 **Seedance 2.0** 模型批量生成 AI 视频。
 
 ## ✨ 功能特性
 
