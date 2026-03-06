@@ -55,7 +55,7 @@ async def safe_click(page, locator_or_selector, label, timeout=5000):
         print(f"  ❌ {label}: {e}")
         return False
 
-async def run(prompt: str, duration: str = "10s", ratio: str = "横屏", model: str = "Seedance 2.0", dry_run: bool = False, ref_video: str = None, ref_image: str = None):
+async def run(prompt: str, duration: str = "10s", ratio: str = "横屏", model: str = "Seedance 2.0", dry_run: bool = False, ref_video: str = None, ref_image: str = None, abort_on_low_credit: bool = True):
     global DEBUG_SCREENSHOTS
     DEBUG_SCREENSHOTS = dry_run
     if ref_image:
@@ -563,6 +563,22 @@ async def run(prompt: str, duration: str = "10s", ratio: str = "横屏", model: 
             await browser.close()
             return
 
+        # === Step 8.5: 积分不足/额度不足检测（提交后快速失败） ===
+        if abort_on_low_credit:
+            low_credit_text = await page.evaluate('''() => {
+                const text = document.body.innerText || '';
+                const keys = ['积分不足', '余额不足', '额度不足', '今日额度已用完', '余额不够'];
+                for (const k of keys) {
+                    if (text.includes(k)) return k;
+                }
+                return '';
+            }''')
+            if low_credit_text:
+                print(f"  ❌ 检测到{low_credit_text}，本次任务已中止（避免无效轮询）")
+                await screenshot(page, '8_low_credit_abort')
+                await browser.close()
+                return
+
         # 等待 thread_id 被拦截
         for _ in range(10):
             if thread_id:
@@ -666,6 +682,7 @@ if __name__ == "__main__":
     parser.add_argument("--cookies", type=str, default="cookies.json", help="Path to cookies.json")
     parser.add_argument("--output-dir", type=str, default=".", help="Directory to save output video")
     parser.add_argument("--dry-run", action="store_true", help="Only fill form, don't submit")
+    parser.add_argument("--no-credit-guard", action="store_true", help="Disable low-credit auto-abort check")
     args = parser.parse_args()
 
     COOKIES_FILE = args.cookies
@@ -675,4 +692,4 @@ if __name__ == "__main__":
     if not os.path.exists(COOKIES_FILE):
         print(f"⚠️ {COOKIES_FILE} not found!")
     else:
-        asyncio.run(run(args.prompt, args.duration, args.ratio, args.model, args.dry_run, args.ref_video, args.ref_image))
+        asyncio.run(run(args.prompt, args.duration, args.ratio, args.model, args.dry_run, args.ref_video, args.ref_image, not args.no_credit_guard))
